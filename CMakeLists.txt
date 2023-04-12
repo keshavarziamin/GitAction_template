@@ -6,14 +6,19 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_C_STANDARD 11)
 
 #add cserial library
-include_directories(
-    ${PROJECT_SOURCE_DIR}/src/sort)
+set(SORT_DIR ${CMAKE_SOURCE_DIR}/src/sort)
+set(SORT_LIB sort)
 
+include_directories(${PROJECT_SOURCE_DIR}/src/sort)
+file(GLOB SORT_FILES ${SORT_DIR}/*.cpp ${SORT_DIR}/*.hpp)
+add_library(${SORT_LIB} ${SORT_FILES})
 
 #make executable file
-set(EXE_FILE ${PROJECT_NAME}_exe )
-add_executable(${EXE_FILE} example.c)
-target_link_libraries(${EXE_FILE} cserial)
+set(EX_DIR ${CMAKE_SOURCE_DIR}/src/simple-example)
+set(EX_FILE ${EX_DIR}/example1.cpp)
+set(EX_EXE ex1)
+add_executable(${EX_EXE} ${EX_FILE})
+target_link_libraries(${EXE_FILE} ${SORT_LIB})
 
 
 # add test framework
