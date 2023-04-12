@@ -20,15 +20,16 @@ FLAG_CLEAN = False
 
 def usage():
     print("\nUSAGE:")
-    print("python3", sys.argv[0], "< -short-option > | < --long-option >")
+    print("python3", sys.argv[0], "< -short_options > | < --long_options >")
 
     print("\nOPTIONS:")
-    print("python3", sys.argv[0], "<-h | --help>   # print usage")
-    print("python3", sys.argv[0], "<-c | --clean>  # remove build folder")
-    print("python3", sys.argv[0], "<-b | --build>  # build source files")
-    print("python3", sys.argv[0], "<-t | --test>   # run unit tests")
+    print("python3", sys.argv[0], "<-h | --help>        # print usage")
+    print("python3", sys.argv[0], "<-c | --clean>       # remove build folder")
+    print("python3", sys.argv[0], "<-b | --build>       # build source files")
+    print("python3", sys.argv[0], "<-r | --rebuild>     # rebuild source files")
+    print("python3", sys.argv[0], "<-t | --test>        # run unit tests")
     print("python3", sys.argv[0],
-          "<-a | --all>    # rebuild source files and run unit tests ")
+          "<-a | --all>         # rebuild source files and run unit tests ")
 
     print("\nEXAMPLE:")
     print("python3", sys.argv[0], "-c   or   ",
@@ -41,6 +42,7 @@ def usage():
           "python3", sys.argv[0], "--test")
     print("python3", sys.argv[0], "-a   or   ",
           "python3", sys.argv[0], "--all")
+    print()
 
 # check status of return
 
