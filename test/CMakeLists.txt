@@ -14,7 +14,7 @@ add_executable(${TEST_NAME}
 target_link_libraries(${TEST_NAME} gtest gtest_main)   
 
 # link your libraries to gtest
-target_link_libraries(${TEST_NAME} cserial)
+target_link_libraries(${TEST_NAME} sort)
 
 
 

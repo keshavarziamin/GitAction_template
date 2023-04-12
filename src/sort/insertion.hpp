@@ -1,17 +1,15 @@
-#include "sort.hpp"
+#include <vector>
+#include <utility>
 
-namespace Sort
-{
-    class Insertion : public Sort
+    class Sort
     {
     private:
         /* data */
     public:
-        Insertion(/* args */){};
-        ~Insertion(){};
+        Sort(/* args */){};
+        ~Sort(){};
 
-        void sort(std::vector<int> &list) override;
+        void sort(std::vector<int> &list);
     };
     
 
-} // namespace Sort
