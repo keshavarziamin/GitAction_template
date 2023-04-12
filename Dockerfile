@@ -5,6 +5,6 @@ RUN apt install -y build-essential autoconf make cmake gcc g++ automake libtool 
 COPY . /Test-CICD
 WORKDIR /Test-CICD
 
-CMD python3 build_and_test.py
+CMD python3 cib.py --all
 
 
