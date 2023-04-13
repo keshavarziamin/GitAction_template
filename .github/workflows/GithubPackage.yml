@@ -11,12 +11,7 @@ on:
       - master
 
 jobs:
-  say-hello:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Hello, Github Action"
   run-test:
-    needs: [say-hello]
     runs-on: ubuntu-latest
     steps:
       - name: checkout this repo
@@ -26,4 +21,4 @@ jobs:
         run: sudo apt install -y build-essential python3 gcc g++ make cmake
 
       - name: build and test app
-        run: python3 build.py
+        run: python3 cib.py --all

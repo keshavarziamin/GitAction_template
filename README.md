@@ -1,2 +1,2 @@
-# Test-CI/CD
-A simple code to show CI/CD how to work. 
+# GitAction_Template
+A simple templte to show CI/CD how to work.
