@@ -1,14 +1,12 @@
 name: Test-CI/CD
 
-
-on: 
-  workflow_dispatch:
+on:
   push:
-    branches:
-      - master
+    tags: [V-*]
+    branches: [master]
+
   pull_request:
-    branches:
-      - master
+    branches: [master]
 
 jobs:
   run-test:
