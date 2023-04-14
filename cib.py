@@ -26,7 +26,8 @@ def usage():
     print("python3", sys.argv[0], "<-h | --help>        # print usage")
     print("python3", sys.argv[0], "<-c | --clean>       # remove build folder")
     print("python3", sys.argv[0], "<-b | --build>       # build source files")
-    print("python3", sys.argv[0], "<-r | --rebuild>     # rebuild source files")
+    print("python3", sys.argv[0],
+          "<-r | --rebuild>     # rebuild source files")
     print("python3", sys.argv[0], "<-t | --test>        # run unit tests")
     print("python3", sys.argv[0],
           "<-a | --all>         # rebuild source files and run unit tests ")
@@ -85,7 +86,11 @@ def build():
 
 
 def updateSubmodule():
+
     print(Fore.BLUE+"UPDATING SUBMODULES ..."+Fore.RESET)
+    ret = executeCommond(
+        ["ssh-keyscan", "github.com >> ~/.ssh/known_hosts"])
+    assertReturn(ret)
     ret = executeCommond(
         ["git", "submodule", "update", "--init", "--recursive"])
     assertReturn(ret)
