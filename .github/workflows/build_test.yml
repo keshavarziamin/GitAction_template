@@ -3,7 +3,7 @@ name: DockerImage
 env:
   PROJECT_NAME: ${{github.repository}}
   TEST_TAG: test
-  VERSOIN_TAG: V0.1.1
+  VERSOIN_TAG: v0.1.1
   LATEST_TAG: ${VERSOIN_TAG}
 
 on:
@@ -18,6 +18,9 @@ jobs:
       -
         name: Checkout
         uses: actions/checkout@v3
+      -
+        name: Install Essensial
+        uses: python3 cib.y --install
       -
         name: Build
         uses: python3 cib.y --build
@@ -53,15 +56,3 @@ jobs:
         name: Test Docker image
         run: |
           docker run --rm ${{env.TEST_TAG}}
-
-      - 
-        name: Build and push docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{env.PROJECT_NAME}}:${{env.VERSOIN_TAG}},
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{env.PROJECT_NAME}}:${{env.LATEST_TAG}}
