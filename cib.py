@@ -16,6 +16,7 @@ FLAG_BUILD = False
 FLAG_REBUILD = False
 FLAG_TEST = False
 FLAG_CLEAN = False
+FLAG_INSTALL = False
 
 
 def usage():
@@ -74,6 +75,32 @@ def executeCommond(cmd):
 
 
 # configure and build source files
+def updateSystem():
+    print(Fore.BLUE+"START UPDATING SYSTEM ...\n"+Fore.RESET)
+    ret = executeCommond(["sudo", "apt", "update", "-y"])
+    assertReturn(ret)
+
+
+def upgradeSystem():
+    print(Fore.BLUE+"START UPGRADING SYSTEM ...\n"+Fore.RESET)
+    ret = executeCommond(["sudo", "apt", "upgrade", "-y"])
+    assertReturn(ret)
+
+
+def installEssensial():
+    updateSystem()
+    upgradeSystem()
+
+    print(Fore.BLUE+"START INSTALLING ESSENSIAL ...\n"+Fore.RESET)
+    ret = executeCommond(["sudo", "apt", "install", "-y",
+                         "build-essential", "autoconf", "make", "cmake", "git", "gcc", "g++",
+                          "automake", "libtool", "python3", "pip"])
+    assertReturn(ret)
+    print(Fore.BLUE+"START INSTALLING COLORAMA ...\n"+Fore.RESET)
+    ret = executeCommond(["pip", "install", "colorama"])
+    assertReturn(ret)
+
+
 def build():
 
     print(Fore.BLUE+"START CONFIGURATION ...\n"+Fore.RESET)
@@ -113,12 +140,12 @@ def cleanBuild():
 def getOptions(argv):
 
     opts, _ = getopt.getopt(
-        argv, "hcbrta", ["help", "clean", "build", "rebuild", "test", "all"])
+        argv, "hicbrta", ["help", "install", "clean", "build", "rebuild", "test", "all"])
 
     if opts == []:
         return False
 
-    global FLAG_BUILD, FLAG_TEST, FLAG_REBUILD, FLAG_CLEAN
+    global FLAG_BUILD, FLAG_TEST, FLAG_REBUILD, FLAG_CLEAN, FLAG_INSTALL
 
     for opt, _ in opts:
 
@@ -132,13 +159,17 @@ def getOptions(argv):
         elif opt in ("-t", "--test"):
             FLAG_TEST = True
 
+        elif opt in ("-c", "--clean"):
+            FLAG_CLEAN = True
+
+        elif opt in ("-i", "--install"):
+            FLAG_INSTALL = True
+
         elif opt in ("-a", "--all"):
             FLAG_CLEAN = True
             FLAG_BUILD = True
             FLAG_TEST = True
-
-        elif opt in ("-c", "--clean"):
-            FLAG_CLEAN = True
+            FLAG_INSTALL = True
 
         elif opt in ("-h", "--help"):
             usage()
@@ -156,6 +187,9 @@ if __name__ == '__main__':
         usage()
         exit(ERROR)
 
+    if FLAG_INSTALL:
+        installEssensial()
+
     if FLAG_CLEAN:
         cleanBuild()
 
@@ -166,5 +200,4 @@ if __name__ == '__main__':
     if FLAG_TEST:
         runUnitTest()
 
-    
     exit(SUCCESS)
