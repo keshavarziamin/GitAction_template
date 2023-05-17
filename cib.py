@@ -16,6 +16,7 @@ FLAG_BUILD = False
 FLAG_REBUILD = False
 FLAG_TEST = False
 FLAG_CLEAN = False
+FLAG_INSTALL = False
 
 
 def usage():
@@ -26,7 +27,8 @@ def usage():
     print("python3", sys.argv[0], "<-h | --help>        # print usage")
     print("python3", sys.argv[0], "<-c | --clean>       # remove build folder")
     print("python3", sys.argv[0], "<-b | --build>       # build source files")
-    print("python3", sys.argv[0], "<-r | --rebuild>     # rebuild source files")
+    print("python3", sys.argv[0],
+          "<-r | --rebuild>     # rebuild source files")
     print("python3", sys.argv[0], "<-t | --test>        # run unit tests")
     print("python3", sys.argv[0],
           "<-a | --all>         # rebuild source files and run unit tests ")
@@ -73,6 +75,32 @@ def executeCommond(cmd):
 
 
 # configure and build source files
+def updateSystem():
+    print(Fore.BLUE+"START UPDATING SYSTEM ...\n"+Fore.RESET)
+    ret = executeCommond(["sudo", "apt", "update", "-y"])
+    assertReturn(ret)
+
+
+def upgradeSystem():
+    print(Fore.BLUE+"START UPGRADING SYSTEM ...\n"+Fore.RESET)
+    ret = executeCommond(["sudo", "apt", "upgrade", "-y"])
+    assertReturn(ret)
+
+
+def installEssensial():
+    updateSystem()
+    upgradeSystem()
+
+    print(Fore.BLUE+"START INSTALLING ESSENSIAL ...\n"+Fore.RESET)
+    ret = executeCommond(["sudo", "apt", "install", "-y",
+                         "build-essential", "autoconf", "make", "cmake", "git", "gcc", "g++",
+                          "automake", "libtool", "python3", "pip"])
+    assertReturn(ret)
+    print(Fore.BLUE+"START INSTALLING COLORAMA ...\n"+Fore.RESET)
+    ret = executeCommond(["pip", "install", "colorama"])
+    assertReturn(ret)
+
+
 def build():
 
     print(Fore.BLUE+"START CONFIGURATION ...\n"+Fore.RESET)
@@ -85,6 +113,10 @@ def build():
 
 
 def updateSubmodule():
+    print(Fore.BLUE+"SCAN SSH-KEY ..."+Fore.RESET)
+    ret = executeCommond(
+        ["ssh-keyscan", "github.com >> ~/.ssh/known_hosts"])
+    assertReturn(ret)
     print(Fore.BLUE+"UPDATING SUBMODULES ..."+Fore.RESET)
     ret = executeCommond(
         ["git", "submodule", "update", "--init", "--recursive"])
@@ -96,8 +128,7 @@ def runUnitTest():
     print(Fore.BLUE+"START TESTING ...\n"+Fore.RESET)
     utb_path = os.path.join(TEST_BIN_DIR, TEST_BIN_FILE)
     ret = executeCommond([utb_path])
-    output = ret.stdout.decode("utf-8")
-    print("RUBTIME_OUTPUT:\n", output)
+    assertReturn(ret)
 
 
 def cleanBuild():
@@ -109,12 +140,12 @@ def cleanBuild():
 def getOptions(argv):
 
     opts, _ = getopt.getopt(
-        argv, "hcbrta", ["help", "clean", "build", "rebuild", "test", "all"])
+        argv, "hicbrta", ["help", "install", "clean", "build", "rebuild", "test", "all"])
 
     if opts == []:
         return False
 
-    global FLAG_BUILD, FLAG_TEST, FLAG_REBUILD, FLAG_CLEAN
+    global FLAG_BUILD, FLAG_TEST, FLAG_REBUILD, FLAG_CLEAN, FLAG_INSTALL
 
     for opt, _ in opts:
 
@@ -128,13 +159,17 @@ def getOptions(argv):
         elif opt in ("-t", "--test"):
             FLAG_TEST = True
 
+        elif opt in ("-c", "--clean"):
+            FLAG_CLEAN = True
+
+        elif opt in ("-i", "--install"):
+            FLAG_INSTALL = True
+
         elif opt in ("-a", "--all"):
             FLAG_CLEAN = True
             FLAG_BUILD = True
             FLAG_TEST = True
-
-        elif opt in ("-c", "--clean"):
-            FLAG_CLEAN = True
+            FLAG_INSTALL = True
 
         elif opt in ("-h", "--help"):
             usage()
@@ -152,6 +187,9 @@ if __name__ == '__main__':
         usage()
         exit(ERROR)
 
+    if FLAG_INSTALL:
+        installEssensial()
+
     if FLAG_CLEAN:
         cleanBuild()
 
@@ -162,5 +200,4 @@ if __name__ == '__main__':
     if FLAG_TEST:
         runUnitTest()
 
-    print(Fore.GREEN+"ALL TEST PASSED."+Fore.RESET)
     exit(SUCCESS)
