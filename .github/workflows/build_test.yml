@@ -3,15 +3,13 @@ name: DockerImage
 env:
   PROJECT_NAME: ${{github.repository}}
   TEST_TAG: test
-  LATEST_TAG: latest
   VERSOIN_TAG: V0.1.1
+  LATEST_TAG: ${VERSOIN_TAG}
 
 on:
   push:
-    tags: [V-*]
-    branches: [master]
-  pull_request:
-    branches: [master]
+    tags: [v*]
+    branches: [dev]
 
 jobs:
   build-docker:
@@ -24,13 +22,6 @@ jobs:
       - 
         name: Set up QEMU
         uses: docker/setup-qemu-action@v2
-
-      - 
-        name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - 
         name: Setup Docker Buildx
