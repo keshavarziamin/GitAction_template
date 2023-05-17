@@ -86,11 +86,11 @@ def build():
 
 
 def updateSubmodule():
-
-    print(Fore.BLUE+"UPDATING SUBMODULES ..."+Fore.RESET)
+    print(Fore.BLUE+"SCAN SSH-KEY ..."+Fore.RESET)
     ret = executeCommond(
         ["ssh-keyscan", "github.com >> ~/.ssh/known_hosts"])
     assertReturn(ret)
+    print(Fore.BLUE+"UPDATING SUBMODULES ..."+Fore.RESET)
     ret = executeCommond(
         ["git", "submodule", "update", "--init", "--recursive"])
     assertReturn(ret)
@@ -101,8 +101,7 @@ def runUnitTest():
     print(Fore.BLUE+"START TESTING ...\n"+Fore.RESET)
     utb_path = os.path.join(TEST_BIN_DIR, TEST_BIN_FILE)
     ret = executeCommond([utb_path])
-    output = ret.stdout.decode("utf-8")
-    print("RUBTIME_OUTPUT:\n", output)
+    assertReturn(ret)
 
 
 def cleanBuild():
@@ -167,5 +166,5 @@ if __name__ == '__main__':
     if FLAG_TEST:
         runUnitTest()
 
-    print(Fore.GREEN+"ALL TEST PASSED."+Fore.RESET)
+    
     exit(SUCCESS)
