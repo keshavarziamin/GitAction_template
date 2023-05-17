@@ -15,7 +15,7 @@
 # making it easier to integrate into a larger software development pipeline.
 
 # Define the name of the workflow and set environment variables
-name: DockerImage
+name: Build_And_Test
 env:
   PROJECT_NAME: ${{github.repository}}
   TEST_TAG: test

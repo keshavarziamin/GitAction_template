@@ -1,8 +1,8 @@
-name: Test-CI/CD
+name: Release
 
 on:
   push:
-    tags: [V-*]
+    tags: [v*]
     branches: [release]
 
 jobs:
