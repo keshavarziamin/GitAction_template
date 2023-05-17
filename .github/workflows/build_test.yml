@@ -1,50 +1,60 @@
-name: DockerImage
+# This is a GitHub Actions workflow file that defines two jobs to build and test a Docker image.
+# The workflow is triggered on push events to branches named "dev" and on tags that start with "v".
+# The first job, "build-and-test", runs on an Ubuntu environment and has three steps.
+# The first step checks out the code from the repository.
+# The second step installs essential dependencies using a Python script called "cib.y".
+# The third step builds and tests the Docker image using another Python script called "cib.y".
 
+# The second job, "build-dockerTest", also runs on an Ubuntu environment and has four steps.
+# The first step checks out the code from the repository.
+# The second step sets up Docker Buildx, a tool for building and testing Docker images.
+# The third step builds the Docker image using the Dockerfile in the current directory and exports it.
+# The fourth step tests the Docker image by running it in a container.
+
+# Overall, this workflow automates the process of building and testing a Docker image,
+# making it easier to integrate into a larger software development pipeline.
+
+# Define the name of the workflow and set environment variables
+name: DockerImage
 env:
   PROJECT_NAME: ${{github.repository}}
   TEST_TAG: test
-  VERSOIN_TAG: v0.1.1
-  LATEST_TAG: ${VERSOIN_TAG}
 
+# Define when the workflow should be triggered
 on:
   push:
-    tags: [v*]
-    branches: [dev]
+    tags: [v*] # Trigger on tags that start with "v"
+    branches: [dev] # Trigger on pushes to the "dev" branch
 
+# Define the jobs that will be run
 jobs:
+  # First job: build and test the Project
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # Use an Ubuntu environment
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v3
-      -
-        name: Install Essensial
-        uses: python3 cib.y --install
-      -
-        name: Build
-        uses: python3 cib.y --build
-      - 
-        name: Test
-        uses: python3 cib.y --test
-
-  build-docker:
-    runs-on: ubuntu-latest
-    steps:
-      - 
-        name: Checkout
+      - name: Checkout # Check out the code from the repository
         uses: actions/checkout@v3
 
-      - 
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+      - name: Install Essential Dependencies # Install dependencies befor btuilding using a Python script
+        run: python3 cib.y --install
 
-      - 
-        name: Setup Docker Buildx
+      - name: Build Project
+        run: python3 cib.y --build
+
+      - name: Test Project
+        run: python3 cib.y --test
+
+  # Second job: build and test the Docker image using Docker Buildx
+  build-dockerTest:
+    runs-on: ubuntu-latest # Use an Ubuntu environment
+    steps:
+      - name: Checkout # Check out the code from the repository
+        uses: actions/checkout@v3
+
+      - name: Setup Docker Buildx # Set up Docker Buildx for building and testing Docker images
         uses: docker/setup-buildx-action@v2
 
-      - 
-        name: Build and export docker image
+      - name: Build and Export Testing Docker Image # Build and export the Docker image using Docker Buildx
         uses: docker/build-push-action@v4
         with:
           context: .
@@ -52,7 +62,5 @@ jobs:
           load: true
           tags: ${{env.TEST_TAG}}
 
-      - 
-        name: Test Docker image
-        run: |
-          docker run --rm ${{env.TEST_TAG}}
+      - name: Test Docker Image # Test the Docker image by running it in a container
+        run: docker run --rm ${{env.TEST_TAG}}
