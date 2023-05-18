@@ -169,7 +169,6 @@ def getOptions(argv):
             FLAG_CLEAN = True
             FLAG_BUILD = True
             FLAG_TEST = True
-            FLAG_INSTALL = True
 
         elif opt in ("-h", "--help"):
             usage()
