@@ -44,10 +44,10 @@ jobs:
           pip install colorama 
 
       - name: Build Project
-        run: python3 cib.y --build
+        run: python3 cib.py --build
 
       - name: Test Project
-        run: python3 cib.y --test
+        run: python3 cib.py --test
 
   # Second job: build and test the Docker image using Docker Buildx
   build-dockerTest:
