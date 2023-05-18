@@ -113,10 +113,10 @@ def build():
 
 
 def updateSubmodule():
-    print(Fore.BLUE+"SCAN SSH-KEY ..."+Fore.RESET)
-    ret = executeCommond(
-        ["ssh-keyscan", "github.com >> ~/.ssh/known_hosts"])
-    assertReturn(ret)
+    # print(Fore.BLUE+"SCAN SSH-KEY ..."+Fore.RESET)
+    # ret = executeCommond(
+    #     ["ssh-keyscan", "github.com >> ~/.ssh/known_hosts"])
+    # assertReturn(ret)
     print(Fore.BLUE+"UPDATING SUBMODULES ..."+Fore.RESET)
     ret = executeCommond(
         ["git", "submodule", "update", "--init", "--recursive"])
