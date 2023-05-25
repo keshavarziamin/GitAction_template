@@ -19,7 +19,9 @@ name: Build_And_Test
 env:
   PROJECT_NAME: ${{github.repository}}
   TEST_TAG: test
-
+  BUILD_DIR: build
+  UNIT_TEST_DIR: build/test
+  UNIT_TEST_EXE: test_sort
 # Define when the workflow should be triggered
 on:
   push:
@@ -37,35 +39,41 @@ jobs:
 
       - name: Install Essential Dependencies # Install dependencies befor btuilding using a Python script
         run: |
-          sudo apt -y update
-          sudo apt list --upgradable
-          sudo apt -y upgrade
-          sudo apt install -y build-essential autoconf make cmake git gcc g++ automake libtool python3 pip
+          apt -y update
+          apt list --upgradable
+          apt -y upgrade
+          apt install -y build-essential autoconf make cmake git gcc g++ automake libtool python3 pip
           pip install colorama 
 
       - name: Build Project
-        run: python3 cib.py --build
+        run:  |
+          git submodule update --init --recursive
+          cmake -S . -B ${{env.BUILD_DIR}}
+          cmake --build ${{env.BUILD_DIR}}
+
 
       - name: Test Project
-        run: python3 cib.py --test
+        run: |
+          ./${{env.UNIT_TEST_DIR}}/${{env.UNIT_TEST_EXE}}
 
-  # Second job: build and test the Docker image using Docker Buildx
-  build-dockerTest:
-    runs-on: ubuntu-latest # Use an Ubuntu environment
-    steps:
-      - name: Checkout # Check out the code from the repository
-        uses: actions/checkout@v3
+  # # Second job: build and test the Docker image using Docker Buildx
+  # build-dockerTest:
+  #   needs: build-and-test
+  #   runs-on: ubuntu-latest # Use an Ubuntu environment
+  #   steps:
+  #     - name: Checkout # Check out the code from the repository
+  #       uses: actions/checkout@v3
 
-      - name: Setup Docker Buildx # Set up Docker Buildx for building and testing Docker images
-        uses: docker/setup-buildx-action@v2
+  #     - name: Setup Docker Buildx # Set up Docker Buildx for building and testing Docker images
+  #       uses: docker/setup-buildx-action@v2
 
-      - name: Build and Export Testing Docker Image # Build and export the Docker image using Docker Buildx
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ./Dockerfile
-          load: true
-          tags: ${{env.TEST_TAG}}
+  #     - name: Build and Export Testing Docker Image # Build and export the Docker image using Docker Buildx
+  #       uses: docker/build-push-action@v4
+  #       with:
+  #         context: .
+  #         file: ./Dockerfile
+  #         load: true
+  #         tags: ${{env.TEST_TAG}}
 
-      - name: Test Docker Image # Test the Docker image by running it in a container
-        run: docker run --rm ${{env.TEST_TAG}}
+  #     - name: Test Docker Image # Test the Docker image by running it in a container
+  #       run: docker run --rm ${{env.TEST_TAG}}
