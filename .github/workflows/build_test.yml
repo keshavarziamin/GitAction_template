@@ -39,10 +39,10 @@ jobs:
 
       - name: Install Essential Dependencies # Install dependencies befor btuilding using a Python script
         run: |
-          apt -y update
-          apt list --upgradable
-          apt -y upgrade
-          apt install -y build-essential autoconf make cmake git gcc g++ automake libtool python3 pip
+          sudo apt -y update
+          sudo apt list --upgradable
+          sudo apt -y upgrade
+          sudo apt install -y build-essential autoconf make cmake git gcc g++ automake libtool python3 pip
           pip install colorama 
 
       - name: Build Project
