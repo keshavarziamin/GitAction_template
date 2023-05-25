@@ -61,24 +61,24 @@ jobs:
         run: |
           ./${{env.UNIT_TEST_DIR}}/${{env.UNIT_TEST_EXE}}
 
-  # # Second job: build and test the Docker image using Docker Buildx
-  # build-dockerTest:
-  #   needs: build-and-test
-  #   runs-on: ubuntu-latest # Use an Ubuntu environment
-  #   steps:
-  #     - name: Checkout # Check out the code from the repository
-  #       uses: actions/checkout@v3
+  # Second job: build and test the Docker image using Docker Buildx
+  build-dockerTest:
+    needs: build-and-test
+    runs-on: ubuntu-latest # Use an Ubuntu environment
+    steps:
+      - name: Checkout # Check out the code from the repository
+        uses: actions/checkout@v3
 
-  #     - name: Setup Docker Buildx # Set up Docker Buildx for building and testing Docker images
-  #       uses: docker/setup-buildx-action@v2
+      - name: Setup Docker Buildx # Set up Docker Buildx for building and testing Docker images
+        uses: docker/setup-buildx-action@v2
 
-  #     - name: Build and Export Testing Docker Image # Build and export the Docker image using Docker Buildx
-  #       uses: docker/build-push-action@v4
-  #       with:
-  #         context: .
-  #         file: ./Dockerfile
-  #         load: true
-  #         tags: ${{env.TEST_TAG}}
+      - name: Build and Export Testing Docker Image # Build and export the Docker image using Docker Buildx
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          load: true
+          tags: ${{env.TEST_TAG}}
 
-  #     - name: Test Docker Image # Test the Docker image by running it in a container
-  #       run: docker run --rm ${{env.TEST_TAG}}
+      - name: Test Docker Image # Test the Docker image by running it in a container
+        run: docker run --rm ${{env.TEST_TAG}}
