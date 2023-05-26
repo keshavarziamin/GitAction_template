@@ -20,8 +20,7 @@ env:
   PROJECT_NAME: ${{github.repository}}
   TEST_TAG: test
   BUILD_DIR: build
-  UNIT_TEST_DIR: build/test
-  UNIT_TEST_EXE: test_sort
+
 # Define when the workflow should be triggered
 on:
   push:
@@ -31,38 +30,36 @@ on:
 # Define the jobs that will be run
 jobs:
   # First job: build and test the Project
-  build-and-test:
+  sourceCode_BuildAndTest:
     runs-on: ubuntu-latest # Use an Ubuntu environment
     steps:
       - name: Checkout # Check out the code from the repository
         uses: actions/checkout@v3
-      
+
       - name: ssh-private-key
         uses: webfactory/ssh-agent@v0.7.0
-        with: 
+        with:
           ssh-private-key: ${{secrets.GITACTION_SECURITY}}
 
       - name: Install Essential Dependencies # Install dependencies befor btuilding using a Python script
         run: |
-          sudo apt -y update
-          sudo apt list --upgradable
-          sudo apt -y upgrade
-          sudo apt install -y build-essential autoconf make cmake git gcc g++ automake libtool python3 pip
-          pip install colorama 
+          sudo apt-get -y update
+          sudo apt install -y build-essential autoconf make cmake git gcc g++ automake libtool \
+          python3 python3-pip
+          pip3 install colorama
 
       - name: Build Project
-        run:  |
+        run: |
           git submodule update --init --recursive
           cmake -S . -B ${{env.BUILD_DIR}}
           cmake --build ${{env.BUILD_DIR}}
 
-
       - name: Test Project
-        run: ./${{env.UNIT_TEST_DIR}}/${{env.UNIT_TEST_EXE}}
+        run: cd ${{env.BUILD_DIR}} && ctest
 
   # Second job: build and test the Docker image using Docker Buildx
-  build-dockerTest:
-    needs: build-and-test
+  Docker_BuildTestingImage:
+    needs: sourceCode_BuildAndTest
     runs-on: ubuntu-latest # Use an Ubuntu environment
     steps:
       - name: Checkout # Check out the code from the repository
