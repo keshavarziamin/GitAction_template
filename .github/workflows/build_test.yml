@@ -24,8 +24,8 @@ env:
 # Define when the workflow should be triggered
 on:
   push:
-    tags: [v*] # Trigger on tags that start with "v"
     branches: [dev] # Trigger on pushes to the "dev" branch
+    tags: [v*] # Trigger on tags that start with "v"
 
 # Define the jobs that will be run
 jobs:
