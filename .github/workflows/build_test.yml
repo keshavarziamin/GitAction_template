@@ -1,0 +1,95 @@
+# This is a GitHub Actions workflow file that defines two jobs to build and test a Docker image.
+# The workflow is triggered on push events to branches named "dev" and on tags that start with "v".
+# The first job, "build-and-test", runs on an Ubuntu environment and has three steps.
+# The first step checks out the code from the repository.
+# The second step installs essential dependencies using a Python script called "cib.y".
+# The third step builds and tests the Docker image using another Python script called "cib.y".
+
+# The second job, "build-dockerTest", also runs on an Ubuntu environment and has four steps.
+# The first step checks out the code from the repository.
+# The second step sets up Docker Buildx, a tool for building and testing Docker images.
+# The third step builds the Docker image using the Dockerfile in the current directory and exports it.
+# The fourth step tests the Docker image by running it in a container.
+
+# Overall, this workflow automates the process of building and testing a Docker image,
+# making it easier to integrate into a larger software development pipeline.
+
+# Define the name of the workflow and set environment variables
+name: Build_And_Test
+env:
+  PROJECT_NAME: ${{github.repository}}
+  TEST_TAG: test
+  BUILD_DIR: build
+  RELEASE_BRANCH: release
+  PRODUCT_BRANCH: master
+
+# Define when the workflow should be triggered
+on:
+  push:
+    branches: 
+      - dev # Trigger on pushes to the "dev" branch
+  pull_request:
+    branches-ignore:
+      - master
+      - release
+# Define the jobs that will be run
+jobs:
+  # First job: build and test the Project
+  sourceCode_BuildAndTest:
+    runs-on: ubuntu-22.04 # Use an Ubuntu environment
+    steps:
+      - name: Checkout # Check out the code from the repository
+        uses: actions/checkout@v3
+
+      - name: ssh-private-key
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{secrets.GITACTION_SECURITY}}
+
+      - name: Install Essential Dependencies # Install dependencies befor btuilding using a Python script
+        run: |
+          sudo apt-get -y update
+          sudo apt install -y build-essential autoconf make cmake git gcc g++ automake libtool \
+          python3 python3-pip
+          pip3 install colorama
+
+      - name: Build Project
+        run: |
+          git submodule update --init --recursive
+          cmake -S . -B ${{env.BUILD_DIR}}
+          cmake --build ${{env.BUILD_DIR}}
+
+      - name: Test Project
+        run: cd ${{env.BUILD_DIR}} && ctest
+
+  # Second job: build and test the Docker image using Docker Buildx
+  Docker_BuildTestingImage:
+    needs: sourceCode_BuildAndTest
+    runs-on: ubuntu-22.04 # Use an Ubuntu environment
+    steps:
+      - name: Checkout # Check out the code from the repository
+        uses: actions/checkout@v3
+
+      - name: Setup Docker Buildx # Set up Docker Buildx for building and testing Docker images
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and Export Testing Docker Image # Build and export the Docker image using Docker Buildx
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          load: true
+          tags: ${{env.TEST_TAG}}
+
+      - name: Test Docker Image # Test the Docker image by running it in a container
+        run: docker run --rm ${{env.TEST_TAG}}
+
+  Release_PushToReleaseBranch:
+    needs: Docker_BuildTestingImage
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout # Check out the code from the repository
+        uses: actions/checkout@v3
+      
+      - name: Push To Release Branch
+        run: git push origin ${{env.RELEASE_BRANCH}}
