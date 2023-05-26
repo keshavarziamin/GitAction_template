@@ -58,8 +58,7 @@ jobs:
 
 
       - name: Test Project
-        run: |
-          ./${{env.UNIT_TEST_DIR}}/${{env.UNIT_TEST_EXE}}
+        run: ./${{env.UNIT_TEST_DIR}}/${{env.UNIT_TEST_EXE}}
 
   # Second job: build and test the Docker image using Docker Buildx
   build-dockerTest:
