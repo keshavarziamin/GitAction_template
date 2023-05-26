@@ -26,9 +26,10 @@ on:
   push:
     branches: 
       - dev # Trigger on pushes to the "dev" branch
-    tags: 
-      - 'v*' # Trigger on tags that start with "v"
-
+  pull_request:
+    branches-ignore:
+      - master
+      - release
 # Define the jobs that will be run
 jobs:
   # First job: build and test the Project
